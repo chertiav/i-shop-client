@@ -13,6 +13,10 @@ const Dashboard = () => {
 				<link rel="icon" type="image/svg" sizes="32x32" href="/img/logo.svg" />
 			</Head>
 			<Header />
+			<main>
+				<h1>Dashboard</h1>
+				<div className={'overlay'} />
+			</main>
 		</>
 	);
 };
