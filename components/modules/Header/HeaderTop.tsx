@@ -38,13 +38,9 @@ const HeaderTop = () => {
 				>
 					<ul className={styles.header__nav__list}>
 						<li className={styles.header__nav__list__item}>
-							<Link
-								onClick={closePopup}
-								href="/shoping-payment"
-								passHref
-								legacyBehavior
-							>
+							<Link href={'/shopping-payment'} passHref legacyBehavior>
 								<a
+									onClick={closePopup}
 									className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
 								>
 									Доставка и оплата
@@ -52,8 +48,9 @@ const HeaderTop = () => {
 							</Link>
 						</li>
 						<li className={styles.header__nav__list__item}>
-							<Link onClick={closePopup} href="/about" passHref legacyBehavior>
+							<Link href={'/about'} passHref legacyBehavior>
 								<a
+									onClick={closePopup}
 									className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
 								>
 									О компании
@@ -61,13 +58,9 @@ const HeaderTop = () => {
 							</Link>
 						</li>
 						<li className={styles.header__nav__list__item}>
-							<Link
-								onClick={closePopup}
-								href="/catalog"
-								passHref
-								legacyBehavior
-							>
+							<Link href={'/catalog'} passHref legacyBehavior>
 								<a
+									onClick={closePopup}
 									className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
 								>
 									Каталог
@@ -75,13 +68,9 @@ const HeaderTop = () => {
 							</Link>
 						</li>
 						<li className={styles.header__nav__list__item}>
-							<Link
-								onClick={closePopup}
-								href="/contacts"
-								passHref
-								legacyBehavior
-							>
+							<Link href={'/contacts'} passHref legacyBehavior>
 								<a
+									onClick={closePopup}
 									className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
 								>
 									Контакты
@@ -89,13 +78,9 @@ const HeaderTop = () => {
 							</Link>
 						</li>
 						<li className={styles.header__nav__list__item}>
-							<Link
-								onClick={closePopup}
-								href="/wholesale-byers"
-								passHref
-								legacyBehavior
-							>
+							<Link href={'/wholesale-byers'} passHref legacyBehavior>
 								<a
+									onClick={closePopup}
 									className={`${styles.header__nav__list__item__link} ${darkModeClass}`}
 								>
 									Оптовым покупателям

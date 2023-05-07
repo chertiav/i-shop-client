@@ -6,7 +6,7 @@ export interface IDashboardSlider {
 	goToPartPage?: boolean;
 }
 
-// export interface ICartAlertProps {
-// 	count: number;
-// 	closeAlert: VoidFunction;
-// }
+export interface ICartAlertProps {
+	count: number;
+	closeAlert: VoidFunction;
+}

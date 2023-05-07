@@ -1,12 +1,16 @@
-import styles from '@/styles/dashboard/index.module.scss';
-import BrandSlider from '@/components/modules/DashboardPage/BrandSlider';
 import { useEffect, useState } from 'react';
-import { IBoilerParts } from '@/types/boilerparts';
-import { getBestsellersOrNewPartsFx } from '@/app/api/boilerParts';
-import { toast } from 'react-toastify';
 import { useStore } from 'effector-react';
-import { $mode } from '@/context/mode';
+import { toast } from 'react-toastify';
+import { AnimatePresence, motion } from 'framer-motion';
+//================================================
 import DashboardSlider from '@/components/modules/DashboardPage/DashboardSlider';
+import BrandSlider from '@/components/modules/DashboardPage/BrandSlider';
+import CartAlert from '@/components/modules/DashboardPage/CartAlert';
+import { getBestsellersOrNewPartsFx } from '@/app/api/boilerParts';
+import { IBoilerParts } from '@/types/boilerparts';
+import { $shoppingCart } from '@/context/shoping-cart';
+import { $mode } from '@/context/mode';
+import styles from '@/styles/dashboard/index.module.scss';
 
 const DashboardPage = () => {
 	const [newParts, setNewParts] = useState<IBoilerParts>({} as IBoilerParts);
@@ -14,14 +18,20 @@ const DashboardPage = () => {
 		{} as IBoilerParts
 	);
 	const [spinner, setSpinner] = useState(false);
+	const shoppingCart = useStore($shoppingCart);
+	const [showAlert, setShowAlert] = useState(!!shoppingCart.length);
 	const mode = useStore($mode);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 	useEffect(() => {
-		loaBoilerParts();
+		loadBoilerParts();
 	}, []);
 
-	const loaBoilerParts = async () => {
+	const closeAlert = () => {
+		return setShowAlert(false);
+	};
+
+	const loadBoilerParts = async () => {
 		try {
 			setSpinner(true);
 			const bestsellers = await getBestsellersOrNewPartsFx(
@@ -40,6 +50,18 @@ const DashboardPage = () => {
 	return (
 		<section className={styles.dashboard}>
 			<div className={`container ${styles.dashboard__container}`}>
+				<AnimatePresence>
+					{showAlert && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							className={`${styles.dashboard__alert} ${darkModeClass}`}
+						>
+							<CartAlert closeAlert={closeAlert} count={shoppingCart.length} />
+						</motion.div>
+					)}
+				</AnimatePresence>
 				<div className={styles.dashboard__brands}>
 					<BrandSlider />
 				</div>
