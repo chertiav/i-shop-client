@@ -21,7 +21,6 @@ const DashboardSlider = ({
 	const isMedia560 = useMediaQuery(560);
 	const isMedia768 = useMediaQuery(768);
 	const isMedia800 = useMediaQuery(800);
-	const isMedia1030 = useMediaQuery(1030);
 	const isMedia1366 = useMediaQuery(1366);
 	const mode = useStore($mode);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
@@ -43,7 +42,6 @@ const DashboardSlider = ({
 		autoplay: true,
 		speed: 5000,
 		arrows: false,
-		// slidesToShow: items.length >= 4 ? (isMedia1030 ? 3 : 4) : items.length - 1,
 		slidesToScroll: isMedia768 ? 1 : 2,
 	};
 
