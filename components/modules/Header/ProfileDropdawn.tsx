@@ -9,15 +9,23 @@ import { IWrappedComponentProps } from '@/types/common';
 import { $user } from '@/context/users';
 import { $mode } from '@/context/mode';
 import styles from '@/styles/profileDropDown/index.module.scss';
+import { logoutFx } from '@/app/api/auth';
+import { useRouter } from 'next/router';
 
 const ProfileDropdawn = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 	({ open, setOpen }, ref) => {
 		const mode = useStore($mode);
 		const user = useStore($user);
+		const router = useRouter();
 		const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 		const toggleProfileDropdawn = () => {
 			return setOpen(!open);
+		};
+
+		const handleLogout = async () => {
+			await logoutFx('/users/logout');
+			router.push('/');
 		};
 
 		return (
@@ -49,7 +57,10 @@ const ProfileDropdawn = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 								</span>
 							</li>
 							<li className={styles.profile__dropdown__item}>
-								<button className={styles.profile__dropdown__item__btn}>
+								<button
+									className={styles.profile__dropdown__item__btn}
+									onClick={handleLogout}
+								>
 									<span
 										className={`${styles.profile__dropdown__item__text} ${darkModeClass}`}
 									>
