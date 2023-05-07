@@ -156,7 +156,7 @@ const Footer = () => {
 					{isMedia750 && <FooterLogo />}
 					<div className={styles.footer__bottom__block}>
 						<p className={styles.footer__bottom__block__copyright}>
-							{`© «Детали для газовых котлов» ${new Date().getFullYear()}`}.
+							{`© «Наименование товаров» ${new Date().getFullYear()}`}.
 						</p>
 					</div>
 				</div>
