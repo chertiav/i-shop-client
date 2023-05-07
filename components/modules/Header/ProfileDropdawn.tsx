@@ -2,16 +2,18 @@ import { useStore } from 'effector-react';
 import { forwardRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 //===========================================================
-import { IWrappedComponentProps } from '@/types/common';
-import { withClickOutside } from '@/utils/withClickOutside';
 import ProfileSvg from '@/components/elements/ProfileSvg/ProfileSvg';
 import LogoutSvg from '@/components/elements/LogoutSvg/LogoutSvg';
+import { withClickOutside } from '@/utils/withClickOutside';
+import { IWrappedComponentProps } from '@/types/common';
+import { $user } from '@/context/users';
 import { $mode } from '@/context/mode';
 import styles from '@/styles/profileDropDown/index.module.scss';
 
 const ProfileDropdawn = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 	({ open, setOpen }, ref) => {
 		const mode = useStore($mode);
+		const user = useStore($user);
 		const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 		const toggleProfileDropdawn = () => {
@@ -38,12 +40,12 @@ const ProfileDropdawn = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 								<span
 									className={`${styles.profile__dropdown__username} ${darkModeClass}`}
 								>
-									andrey
+									{user.userName}
 								</span>
 								<span
 									className={`${styles.profile__dropdown__email} ${darkModeClass}`}
 								>
-									chertiav@gmail.com
+									{user.email}
 								</span>
 							</li>
 							<li className={styles.profile__dropdown__item}>
