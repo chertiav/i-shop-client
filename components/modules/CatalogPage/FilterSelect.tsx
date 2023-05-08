@@ -1,10 +1,11 @@
-import { useState } from 'react';
+/* eslint-disable indent */
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { useStore } from 'effector-react';
 //================================================
 import { createSelectOption } from '@/utils/common';
 import { categoriesOptions } from '@/utils/selectContents';
-import { SelectOptionType } from '@/types/common';
+import { IOption, SelectOptionType } from '@/types/common';
 import { $mode } from '@/context/mode';
 import { optionStyles } from '@/styles/searchInput';
 import {
@@ -12,20 +13,89 @@ import {
 	controlStyles,
 	menuStyles,
 } from '@/styles/catalog/select';
+import {
+	$boilerParts,
+	setBoilerPartsCheapFirst,
+	setBoilerPartsExpensiveFirst,
+	setBoilerPartsPopularity,
+} from '@/context/boilerParts';
+import { useRouter } from 'next/router';
 
 const FilterSelect = () => {
 	const mode = useStore($mode);
+	const boilerParts = useStore($boilerParts);
 	const [categoryOption, setCategoryOption] = useState<SelectOptionType>(null);
+	const router = useRouter();
 
-	const handleSearchOptionChange = (selectedOption: SelectOptionType) => {
+	useEffect(() => {
+		if (boilerParts.rows) {
+			switch (router.query.first) {
+				case 'cheap': {
+					updateCategoryOption('Сначала дешевые');
+					setBoilerPartsCheapFirst();
+					break;
+				}
+				case 'expensive': {
+					updateCategoryOption('Сначала дорогие');
+					setBoilerPartsExpensiveFirst();
+					break;
+				}
+				case 'popular': {
+					updateCategoryOption('По популярности');
+					setBoilerPartsPopularity();
+					break;
+				}
+				default:
+					updateCategoryOption('Сначала дешевые');
+					setBoilerPartsCheapFirst();
+					break;
+			}
+		}
+	}, [boilerParts.rows, router.query.first]);
+
+	const updateCategoryOption = (value: string) => {
+		return setCategoryOption({ value, label: value });
+	};
+
+	const updateRouteParam = (first: string) => {
+		return router.push(
+			{
+				query: {
+					...router.query,
+					first,
+				},
+			},
+			undefined,
+			{ shallow: true }
+		);
+	};
+
+	const handleSortOptionChange = (selectedOption: SelectOptionType) => {
 		setCategoryOption(selectedOption);
+		switch ((selectedOption as IOption).value) {
+			case 'Сначала дешевые': {
+				setBoilerPartsCheapFirst();
+				updateRouteParam('cheap');
+				break;
+			}
+			case 'Сначала дорогие': {
+				setBoilerPartsExpensiveFirst();
+				updateRouteParam('expensive');
+				break;
+			}
+			case 'По популярности': {
+				setBoilerPartsPopularity();
+				updateRouteParam('popular');
+				break;
+			}
+		}
 	};
 
 	return (
 		<Select
 			placeholder={'Я ищу...'}
 			value={categoryOption || createSelectOption('Сначала дешевые')}
-			onChange={handleSearchOptionChange}
+			onChange={handleSortOptionChange}
 			styles={{
 				...selectStyles,
 				control: (defaultStyles) => {
