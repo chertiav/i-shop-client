@@ -15,6 +15,7 @@ import styles from '@/styles/catalog/index.module.scss';
 import { IQueryParams } from '@/types/catalog';
 import { useRouter } from 'next/router';
 import { IBoilerParts } from '@/types/boilerparts';
+import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters';
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
 	const boilerParts = useStore($boilerParts);
@@ -135,7 +136,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 				</div>
 				<div className={`${styles.catalog__bottom} ${darkModeClass}`}>
 					<div className={styles.catalog__bottom__inner}>
-						<div className="">Filters</div>
+						<CatalogFilters />
 						{spinner ? (
 							<ul className={skeletonStyles.skeleton}>
 								{Array.from(new Array(8)).map((_, index) => {
