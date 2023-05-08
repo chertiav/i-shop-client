@@ -1,7 +1,8 @@
-import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useStore } from 'effector-react';
 import { toast } from 'react-toastify';
+import { AnimatePresence } from 'framer-motion';
+import ReactPaginate from 'react-paginate';
 //============================================
 import ManufacturesBlock from '@/components/modules/CatalogPage/ManufacturesBlock';
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem';
@@ -11,12 +12,27 @@ import { $boilerParts, setBoilerParts } from '@/context/boilerParts';
 import { $mode } from '@/context/mode';
 import skeletonStyles from '@/styles/skeleton/index.module.scss';
 import styles from '@/styles/catalog/index.module.scss';
+import { IQueryParams } from '@/types/catalog';
+import { useRouter } from 'next/router';
+import { IBoilerParts } from '@/types/boilerparts';
 
-const CatalogPage = () => {
+const CatalogPage = ({ query }: { query: IQueryParams }) => {
 	const boilerParts = useStore($boilerParts);
 	const [spinner, setSpinner] = useState(false);
+	const isValidOffset =
+		query.offset && !isNaN(+query.offset) && +query.offset > 0;
+	const [currentPage, setCurrentPage] = useState(
+		isValidOffset ? +query.offset - 1 : 0
+	);
+	const pageCount = Math.ceil(boilerParts.count / 20);
 	const mode = useStore($mode);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
+	const router = useRouter();
+
+	const resetPagination = (data: IBoilerParts) => {
+		setCurrentPage(0);
+		setBoilerParts(data);
+	};
 
 	useEffect(() => {
 		loadBoilerParts();
@@ -25,11 +41,72 @@ const CatalogPage = () => {
 		try {
 			setSpinner(true);
 			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
-			setBoilerParts(data);
+			if (!isValidOffset) {
+				router.replace({
+					query: {
+						offset: 1,
+					},
+				});
+				resetPagination(data);
+				return;
+			}
+			if (isValidOffset) {
+				if (+query.offset > Math.ceil(data.count / 20)) {
+					router.push(
+						{
+							query: {
+								...query,
+								offset: 1,
+							},
+						},
+						undefined,
+						{ shallow: true }
+					);
+				}
+				resetPagination(data);
+				return;
+			}
+			const offset = +query.offset - 1;
+			const result = await getBoilerPartsFx(
+				`/boiler-parts?limit=20&offset=${offset}`
+			);
+			setCurrentPage(offset);
+			setBoilerParts(result);
 		} catch (error) {
 			toast.error((error as Error).message);
 		} finally {
 			setSpinner(false);
+		}
+	};
+
+	const handlePageChange = async ({ selected }: { selected: number }) => {
+		try {
+			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
+			if (selected > pageCount) {
+				resetPagination(data);
+				return;
+			}
+			if (isValidOffset && +query.offset > Math.ceil(data.count / 20)) {
+				resetPagination(data);
+				return;
+			}
+			const result = await getBoilerPartsFx(
+				`/boiler-parts?limit=20&offset=${selected}`
+			);
+			router.push(
+				{
+					query: {
+						...router.query,
+						offset: selected + 1,
+					},
+				},
+				undefined,
+				{ shallow: true }
+			);
+			setCurrentPage(selected);
+			setBoilerParts(result);
+		} catch (e) {
+			toast.error((e as Error).message);
 		}
 	};
 
@@ -86,6 +163,19 @@ const CatalogPage = () => {
 							</ul>
 						)}
 					</div>
+					<ReactPaginate
+						containerClassName={styles.catalog__bottom__list}
+						pageClassName={styles.catalog__bottom__list__item}
+						pageLinkClassName={styles.catalog__bottom__list__item__link}
+						previousClassName={styles.catalog__bottom__list__prev}
+						nextClassName={styles.catalog__bottom__list__next}
+						breakClassName={styles.catalog__bottom__list__break}
+						breakLinkClassName={`${styles.catalog__bottom__list__break__link} ${darkModeClass}`}
+						breakLabel={'...'}
+						pageCount={pageCount}
+						forcePage={currentPage}
+						onPageChange={handlePageChange}
+					/>
 				</div>
 			</div>
 		</section>
