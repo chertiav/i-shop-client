@@ -8,7 +8,12 @@ import ManufacturesBlock from '@/components/modules/CatalogPage/ManufacturesBloc
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem';
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect';
 import { getBoilerPartsFx } from '@/app/api/boilerParts';
-import { $boilerParts, setBoilerParts } from '@/context/boilerParts';
+import {
+	$boilerManufacturers,
+	$boilerParts,
+	$partsManufactures,
+	setBoilerParts,
+} from '@/context/boilerParts';
 import { $mode } from '@/context/mode';
 import skeletonStyles from '@/styles/skeleton/index.module.scss';
 import styles from '@/styles/catalog/index.module.scss';
@@ -18,17 +23,33 @@ import { IBoilerParts } from '@/types/boilerparts';
 import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters';
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
+	const router = useRouter();
+	const mode = useStore($mode);
 	const boilerParts = useStore($boilerParts);
+	const boilerManufacturers = useStore($boilerManufacturers);
+	const partsManufacturers = useStore($partsManufactures);
+	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 	const [spinner, setSpinner] = useState(false);
+	const [priceRange, setPriceRange] = useState([1000, 9000]);
+	const [isPriceChanged, setIsPriceRangeChanged] = useState(false);
+
 	const isValidOffset =
 		query.offset && !isNaN(+query.offset) && +query.offset > 0;
 	const [currentPage, setCurrentPage] = useState(
 		isValidOffset ? +query.offset - 1 : 0
 	);
-	const pageCount = Math.ceil(boilerParts.count / 20);
-	const mode = useStore($mode);
-	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
-	const router = useRouter();
+	const pagesCount = Math.ceil(boilerParts.count / 20);
+	const isAnyBoilerManufacturerChecked = boilerManufacturers.some((item) => {
+		return item.checked;
+	});
+	const isAnyPartManufacturerChecked = partsManufacturers.some((item) => {
+		return item.checked;
+	});
+	const resetFilterBtnDisabled = !(
+		isPriceChanged ||
+		isAnyBoilerManufacturerChecked ||
+		isAnyPartManufacturerChecked
+	);
 
 	const resetPagination = (data: IBoilerParts) => {
 		setCurrentPage(0);
@@ -63,16 +84,20 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 						undefined,
 						{ shallow: true }
 					);
+					setCurrentPage(0);
+					setBoilerParts(data);
+					return;
 				}
-				resetPagination(data);
+				const offset = +query.offset - 1;
+				const result = await getBoilerPartsFx(
+					`/boiler-parts?limit=20&offset=${offset}`
+				);
+				setCurrentPage(offset);
+				setBoilerParts(result);
 				return;
 			}
-			const offset = +query.offset - 1;
-			const result = await getBoilerPartsFx(
-				`/boiler-parts?limit=20&offset=${offset}`
-			);
-			setCurrentPage(offset);
-			setBoilerParts(result);
+			setCurrentPage(0);
+			setBoilerParts(data);
 		} catch (error) {
 			toast.error((error as Error).message);
 		} finally {
@@ -83,7 +108,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 	const handlePageChange = async ({ selected }: { selected: number }) => {
 		try {
 			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
-			if (selected > pageCount) {
+			if (selected > pagesCount) {
 				resetPagination(data);
 				return;
 			}
@@ -127,7 +152,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 					<div className={styles.catalog__top__inner}>
 						<button
 							className={`${styles.catalog__top__reset} ${darkModeClass}`}
-							disabled={true}
+							disabled={resetFilterBtnDisabled}
 						>
 							Сбросить фильтр
 						</button>
@@ -136,7 +161,12 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 				</div>
 				<div className={`${styles.catalog__bottom} ${darkModeClass}`}>
 					<div className={styles.catalog__bottom__inner}>
-						<CatalogFilters />
+						<CatalogFilters
+							priceRange={priceRange}
+							setPriceRange={setPriceRange}
+							setIsPriceRangeChanged={setIsPriceRangeChanged}
+							resetFilterBtnDisabled={resetFilterBtnDisabled}
+						/>
 						{spinner ? (
 							<ul className={skeletonStyles.skeleton}>
 								{Array.from(new Array(8)).map((_, index) => {
@@ -173,7 +203,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 						breakClassName={styles.catalog__bottom__list__break}
 						breakLinkClassName={`${styles.catalog__bottom__list__break__link} ${darkModeClass}`}
 						breakLabel={'...'}
-						pageCount={pageCount}
+						pageCount={pagesCount}
 						forcePage={currentPage}
 						onPageChange={handlePageChange}
 					/>

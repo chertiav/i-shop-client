@@ -22,7 +22,7 @@ const FilterCheckBoxItem = ({
 		>
 			<label>
 				<input
-					type={'checked'}
+					type={'checkbox'}
 					checked={checked}
 					onChange={handleFilterChange}
 				/>

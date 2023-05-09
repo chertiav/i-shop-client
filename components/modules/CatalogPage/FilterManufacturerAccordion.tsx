@@ -50,6 +50,7 @@ const FilterManufacturerAccordion = ({
 						return (
 							<FilterCheckBoxItem
 								key={item.id}
+								id={item.id}
 								title={item.title}
 								checked={item.checked}
 								event={updateManufacturer}
