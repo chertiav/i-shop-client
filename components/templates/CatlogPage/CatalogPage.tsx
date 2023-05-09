@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { AnimatePresence } from 'framer-motion';
 import ReactPaginate from 'react-paginate';
 //============================================
-import ManufacturesBlock from '@/components/modules/CatalogPage/ManufacturesBlock';
+import ManufacturersBlock from '@/components/modules/CatalogPage/ManufacturersBlock';
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem';
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect';
 import { getBoilerPartsFx } from '@/app/api/boilerParts';
@@ -12,7 +12,11 @@ import {
 	$boilerManufacturers,
 	$boilerParts,
 	$partsManufactures,
+	setBoilerManufactures,
 	setBoilerParts,
+	setPartsManufactures,
+	updateBoilerManufacturer,
+	updatePartsManufacturer,
 } from '@/context/boilerParts';
 import { $mode } from '@/context/mode';
 import skeletonStyles from '@/styles/skeleton/index.module.scss';
@@ -136,6 +140,27 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 		}
 	};
 
+	const resetFilters = async () => {
+		try {
+			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
+			setBoilerManufactures(
+				boilerManufacturers.map((item) => {
+					return { ...item, checked: false };
+				})
+			);
+			setPartsManufactures(
+				boilerManufacturers.map((item) => {
+					return { ...item, checked: false };
+				})
+			);
+			setBoilerParts(data);
+			setPriceRange([1000, 9000]);
+			setIsPriceRangeChanged(false);
+		} catch (e) {
+			toast.error((e as Error).message);
+		}
+	};
+
 	return (
 		<section className={styles.catalog}>
 			<div className={`container ${styles.catalog__container}`}>
@@ -144,15 +169,28 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 				</h2>
 				<div className={`${styles.catalog__top} ${darkModeClass}`}>
 					<AnimatePresence>
-						<ManufacturesBlock title={'Производитель типа товаров'} />
+						{isAnyBoilerManufacturerChecked && (
+							<ManufacturersBlock
+								event={updateBoilerManufacturer}
+								manufacturersList={boilerManufacturers}
+								title={'Производитель типа товаров'}
+							/>
+						)}
 					</AnimatePresence>
 					<AnimatePresence>
-						<ManufacturesBlock title={'Производитель подтипа товаров'} />
+						{isAnyPartManufacturerChecked && (
+							<ManufacturersBlock
+								event={updatePartsManufacturer}
+								manufacturersList={partsManufacturers}
+								title={'Производитель подтипа товаров'}
+							/>
+						)}
 					</AnimatePresence>
 					<div className={styles.catalog__top__inner}>
 						<button
 							className={`${styles.catalog__top__reset} ${darkModeClass}`}
 							disabled={resetFilterBtnDisabled}
+							onClick={resetFilters}
 						>
 							Сбросить фильтр
 						</button>
@@ -166,6 +204,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 							setPriceRange={setPriceRange}
 							setIsPriceRangeChanged={setIsPriceRangeChanged}
 							resetFilterBtnDisabled={resetFilterBtnDisabled}
+							resetFilters={resetFilters}
 						/>
 						{spinner ? (
 							<ul className={skeletonStyles.skeleton}>

@@ -2,6 +2,13 @@ import { Event } from 'effector-next';
 
 export interface IManufacturesBlockProps {
 	title: string;
+	event: Event<IFilterCheckboxItem>;
+	manufacturersList: IFilterCheckboxItem[];
+}
+
+export interface IManufacturesBlockItemProps {
+	item: IFilterCheckboxItem;
+	event: Event<IFilterCheckboxItem>;
 }
 
 export interface IQueryParams {
@@ -36,6 +43,9 @@ export interface IPriceRangeProps {
 export interface ICatalogFilterDesktopProps extends IPriceRangeProps {
 	resetFilterBtnDisabled: boolean;
 	spinner: boolean;
+	resetFilters: VoidFunction;
 }
 
-export type ICatalogFiltersProps = ICatalogFilterDesktopProps;
+export interface ICatalogFiltersProps extends ICatalogFilterDesktopProps {
+	resetFilters: VoidFunction;
+}
