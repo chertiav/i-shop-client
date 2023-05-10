@@ -8,6 +8,7 @@ const boilerParts = createDomain();
 export const setBoilerParts = boilerParts.createEvent<IBoilerParts>();
 export const setBoilerPartsCheapFirst = boilerParts.createEvent();
 export const setBoilerPartsExpensiveFirst = boilerParts.createEvent();
+export const setFilteredBoilerParts = boilerParts.createEvent<IBoilerParts>();
 export const setBoilerPartsPopularity = boilerParts.createEvent();
 export const setBoilerManufactures =
 	boilerParts.createEvent<IFilterCheckboxItem[]>();
@@ -17,19 +18,43 @@ export const setPartsManufactures =
 	boilerParts.createEvent<IFilterCheckboxItem[]>();
 export const updatePartsManufacturer =
 	boilerParts.createEvent<IFilterCheckboxItem>();
+export const setBoilerManufacturersFromQuery =
+	boilerParts.createEvent<string[]>();
+export const setPartsManufacturersFromQuery =
+	boilerParts.createEvent<string[]>();
 
 const updateManufacturer = (
-	manufactures: IFilterCheckboxItem[],
+	manufacturers: IFilterCheckboxItem[],
 	id: string,
 	payload: Partial<IFilterCheckboxItem>
 ) => {
-	return manufactures.map((item) => {
+	return manufacturers.map((item) => {
 		if (item.id === id) {
 			return {
 				...item,
 				...payload,
 			};
 		}
+		return item;
+	});
+};
+
+const updateManufacturerFromQuery = (
+	manufacturers: IFilterCheckboxItem[],
+	manufacturersFromQuery: string[]
+) => {
+	return manufacturers.map((item) => {
+		if (
+			manufacturersFromQuery.find((title) => {
+				return title === item.title;
+			})
+		) {
+			return {
+				...item,
+				checked: true,
+			};
+		}
+
 		return item;
 	});
 };
@@ -77,6 +102,9 @@ export const $boilerManufacturers = boilerParts
 				checked: payload.checked,
 			}),
 		];
+	})
+	.on(setBoilerManufacturersFromQuery, (state, manufacturersFromQuery) => {
+		return [...updateManufacturerFromQuery(state, manufacturersFromQuery)];
 	});
 
 export const $partsManufactures = boilerParts
@@ -92,4 +120,13 @@ export const $partsManufactures = boilerParts
 				checked: payload.checked,
 			}),
 		];
+	})
+	.on(setPartsManufacturersFromQuery, (state, partsManufacturersFromQuery) => {
+		return [...updateManufacturerFromQuery(state, partsManufacturersFromQuery)];
+	});
+
+export const $filteredBoilerParts = boilerParts
+	.createStore<IBoilerParts>({} as IBoilerParts)
+	.on(setFilteredBoilerParts, (_, parts) => {
+		return parts;
 	});

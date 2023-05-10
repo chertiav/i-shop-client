@@ -21,7 +21,11 @@ import {
 } from '@/context/boilerParts';
 import { useRouter } from 'next/router';
 
-const FilterSelect = () => {
+const FilterSelect = ({
+	setSpinner,
+}: {
+	setSpinner: (arg0: boolean) => void;
+}) => {
 	const mode = useStore($mode);
 	const boilerParts = useStore($boilerParts);
 	const [categoryOption, setCategoryOption] = useState<SelectOptionType>(null);
@@ -71,6 +75,7 @@ const FilterSelect = () => {
 	};
 
 	const handleSortOptionChange = (selectedOption: SelectOptionType) => {
+		setSpinner(true);
 		setCategoryOption(selectedOption);
 		switch ((selectedOption as IOption).value) {
 			case 'Сначала дешевые': {
@@ -89,6 +94,9 @@ const FilterSelect = () => {
 				break;
 			}
 		}
+		setTimeout(() => {
+			return setSpinner(false);
+		}, 1000);
 	};
 
 	return (

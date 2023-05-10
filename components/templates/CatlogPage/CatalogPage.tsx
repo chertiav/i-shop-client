@@ -11,6 +11,7 @@ import { getBoilerPartsFx } from '@/app/api/boilerParts';
 import {
 	$boilerManufacturers,
 	$boilerParts,
+	$filteredBoilerParts,
 	$partsManufactures,
 	setBoilerManufactures,
 	setBoilerParts,
@@ -32,10 +33,12 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 	const boilerParts = useStore($boilerParts);
 	const boilerManufacturers = useStore($boilerManufacturers);
 	const partsManufacturers = useStore($partsManufactures);
+	const filteredBoilerParts = useStore($filteredBoilerParts);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 	const [spinner, setSpinner] = useState(false);
 	const [priceRange, setPriceRange] = useState([1000, 9000]);
-	const [isPriceChanged, setIsPriceRangeChanged] = useState(false);
+	const [isFilterInQuery, setIsFilterInQuery] = useState(false);
+	const [isPriceRangeChanged, setIsPriceRangeChanged] = useState(false);
 
 	const isValidOffset =
 		query.offset && !isNaN(+query.offset) && +query.offset > 0;
@@ -50,7 +53,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 		return item.checked;
 	});
 	const resetFilterBtnDisabled = !(
-		isPriceChanged ||
+		isPriceRangeChanged ||
 		isAnyBoilerManufacturerChecked ||
 		isAnyPartManufacturerChecked
 	);
@@ -62,7 +65,8 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 
 	useEffect(() => {
 		loadBoilerParts();
-	}, []);
+	}, [filteredBoilerParts, isFilterInQuery]);
+
 	const loadBoilerParts = async () => {
 		try {
 			setSpinner(true);
@@ -89,7 +93,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 						{ shallow: true }
 					);
 					setCurrentPage(0);
-					setBoilerParts(data);
+					setBoilerParts(isFilterInQuery ? filteredBoilerParts : data);
 					return;
 				}
 				const offset = +query.offset - 1;
@@ -97,31 +101,49 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 					`/boiler-parts?limit=20&offset=${offset}`
 				);
 				setCurrentPage(offset);
-				setBoilerParts(result);
+				setBoilerParts(isFilterInQuery ? filteredBoilerParts : result);
 				return;
 			}
+
 			setCurrentPage(0);
-			setBoilerParts(data);
+			setBoilerParts(isFilterInQuery ? filteredBoilerParts : data);
 		} catch (error) {
 			toast.error((error as Error).message);
 		} finally {
-			setSpinner(false);
+			setTimeout(() => {
+				return setSpinner(false);
+			}, 1000);
 		}
 	};
 
 	const handlePageChange = async ({ selected }: { selected: number }) => {
 		try {
+			setSpinner(true);
 			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
+
 			if (selected > pagesCount) {
-				resetPagination(data);
+				resetPagination(isFilterInQuery ? filteredBoilerParts : data);
 				return;
 			}
+
 			if (isValidOffset && +query.offset > Math.ceil(data.count / 20)) {
-				resetPagination(data);
+				resetPagination(isFilterInQuery ? filteredBoilerParts : data);
 				return;
 			}
 			const result = await getBoilerPartsFx(
-				`/boiler-parts?limit=20&offset=${selected}`
+				`/boiler-parts?limit=20&offset=${selected}${
+					isFilterInQuery && router.query.boiler
+						? `&boiler=${router.query.boiler}`
+						: ''
+				}${
+					isFilterInQuery && router.query.parts
+						? `&parts=${router.query.parts}`
+						: ''
+				}${
+					isFilterInQuery && router.query.priceFrom && router.query.priceTo
+						? `&priceFrom=${router.query.priceFrom}&priceTo=${router.query.priceTo}`
+						: ''
+				}`
 			);
 			router.push(
 				{
@@ -133,23 +155,37 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 				undefined,
 				{ shallow: true }
 			);
-			setCurrentPage(selected);
 			setBoilerParts(result);
+			setCurrentPage(selected);
 		} catch (e) {
 			toast.error((e as Error).message);
+		} finally {
+			setTimeout(() => {
+				return setSpinner(false);
+			}, 1000);
 		}
 	};
 
 	const resetFilters = async () => {
 		try {
 			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
+			const params = router.query;
+
+			delete params.boiler;
+			delete params.parts;
+			delete params.priceFrom;
+			delete params.priceTo;
+			params.first = 'cheap';
+
+			router.push({ query: { ...params } }, undefined, { shallow: true });
+
 			setBoilerManufactures(
 				boilerManufacturers.map((item) => {
 					return { ...item, checked: false };
 				})
 			);
 			setPartsManufactures(
-				boilerManufacturers.map((item) => {
+				partsManufacturers.map((item) => {
 					return { ...item, checked: false };
 				})
 			);
@@ -194,7 +230,7 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 						>
 							Сбросить фильтр
 						</button>
-						<FilterSelect />
+						<FilterSelect setSpinner={setSpinner} />
 					</div>
 				</div>
 				<div className={`${styles.catalog__bottom} ${darkModeClass}`}>
@@ -205,10 +241,13 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 							setIsPriceRangeChanged={setIsPriceRangeChanged}
 							resetFilterBtnDisabled={resetFilterBtnDisabled}
 							resetFilters={resetFilters}
+							isPriceRangeChanged={isPriceRangeChanged}
+							currentPage={currentPage}
+							setIsFilterInQuery={setIsFilterInQuery}
 						/>
 						{spinner ? (
 							<ul className={skeletonStyles.skeleton}>
-								{Array.from(new Array(8)).map((_, index) => {
+								{Array.from(new Array(20)).map((_, index) => {
 									return (
 										<li
 											key={index}

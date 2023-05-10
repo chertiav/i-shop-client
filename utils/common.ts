@@ -1,3 +1,5 @@
+import { NextRouter } from 'next/router';
+
 export const getWindowWidth = () => {
 	const { innerWidth: windowWidth } =
 		typeof window !== 'undefined' ? window : { innerWidth: 0 };
@@ -33,5 +35,15 @@ export const idGenerator = () => {
 		S4() +
 		S4() +
 		S4()
+	);
+};
+
+export const getQueryParamOnFirstRender = (
+	queryName: string,
+	router: NextRouter
+) => {
+	return (
+		router.query[queryName] ||
+		router.asPath.match(new RegExp(`[&?]${queryName}=(.*)(&|$)`))
 	);
 };
