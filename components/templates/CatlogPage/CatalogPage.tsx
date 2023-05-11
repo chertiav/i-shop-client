@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { useStore } from 'effector-react';
 import { toast } from 'react-toastify';
 import { AnimatePresence } from 'framer-motion';
@@ -7,6 +8,7 @@ import ReactPaginate from 'react-paginate';
 import ManufacturersBlock from '@/components/modules/CatalogPage/ManufacturersBlock';
 import CatalogItem from '@/components/modules/CatalogPage/CatalogItem';
 import FilterSelect from '@/components/modules/CatalogPage/FilterSelect';
+import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters';
 import { getBoilerPartsFx } from '@/app/api/boilerParts';
 import {
 	$boilerManufacturers,
@@ -20,20 +22,21 @@ import {
 	updatePartsManufacturer,
 } from '@/context/boilerParts';
 import { $mode } from '@/context/mode';
+import { IQueryParams } from '@/types/catalog';
+import { IBoilerParts } from '@/types/boilerparts';
+import { usePopup } from '@/hooks/usePopup';
+import { checkQueryParams } from '@/utils/catalog';
 import skeletonStyles from '@/styles/skeleton/index.module.scss';
 import styles from '@/styles/catalog/index.module.scss';
-import { IQueryParams } from '@/types/catalog';
-import { useRouter } from 'next/router';
-import { IBoilerParts } from '@/types/boilerparts';
-import CatalogFilters from '@/components/modules/CatalogPage/CatalogFilters';
+import FilterSvg from '@/components/elements/FilterSvg/FilterSvg';
 
 const CatalogPage = ({ query }: { query: IQueryParams }) => {
 	const router = useRouter();
-	const mode = useStore($mode);
 	const boilerParts = useStore($boilerParts);
 	const boilerManufacturers = useStore($boilerManufacturers);
 	const partsManufacturers = useStore($partsManufactures);
 	const filteredBoilerParts = useStore($filteredBoilerParts);
+	const mode = useStore($mode);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 	const [spinner, setSpinner] = useState(false);
 	const [priceRange, setPriceRange] = useState([1000, 9000]);
@@ -57,6 +60,8 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 		isAnyBoilerManufacturerChecked ||
 		isAnyPartManufacturerChecked
 	);
+
+	const { toggleOpen, open, closePopup } = usePopup();
 
 	const resetPagination = (data: IBoilerParts) => {
 		setCurrentPage(0);
@@ -130,17 +135,21 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 				resetPagination(isFilterInQuery ? filteredBoilerParts : data);
 				return;
 			}
+
+			const { isValidBoilerQuery, isValidPartsQuery, isValidPriceQuery } =
+				checkQueryParams(router);
+
 			const result = await getBoilerPartsFx(
 				`/boiler-parts?limit=20&offset=${selected}${
-					isFilterInQuery && router.query.boiler
+					isFilterInQuery && isValidBoilerQuery
 						? `&boiler=${router.query.boiler}`
 						: ''
 				}${
-					isFilterInQuery && router.query.parts
+					isFilterInQuery && isValidPartsQuery
 						? `&parts=${router.query.parts}`
 						: ''
 				}${
-					isFilterInQuery && router.query.priceFrom && router.query.priceTo
+					isFilterInQuery && isValidPriceQuery
 						? `&priceFrom=${router.query.priceFrom}&priceTo=${router.query.priceTo}`
 						: ''
 				}`
@@ -230,6 +239,17 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 						>
 							Сбросить фильтр
 						</button>
+						<button
+							className={styles.catalog__top__mobile_btn}
+							onClick={toggleOpen}
+						>
+							<span className={styles.catalog__top__mobile_btn__svg}>
+								<FilterSvg />
+							</span>
+							<span className={styles.catalog__top__mobile_btn__text}>
+								Фильтр
+							</span>
+						</button>
 						<FilterSelect setSpinner={setSpinner} />
 					</div>
 				</div>
@@ -244,6 +264,8 @@ const CatalogPage = ({ query }: { query: IQueryParams }) => {
 							isPriceRangeChanged={isPriceRangeChanged}
 							currentPage={currentPage}
 							setIsFilterInQuery={setIsFilterInQuery}
+							closePopup={closePopup}
+							filterMobileOpen={open}
 						/>
 						{spinner ? (
 							<ul className={skeletonStyles.skeleton}>
