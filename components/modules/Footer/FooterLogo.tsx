@@ -8,7 +8,7 @@ const FooterLogo = () => {
 				<a className={styles.footer__top__item__logo}>
 					<img src="/img/logo-footer.svg" alt="logo-footer" />
 					<span className={styles.footer__top__item__logo__text}>
-						Детали для газовых котлов
+						Наименование товаров
 					</span>
 				</a>
 			</Link>
