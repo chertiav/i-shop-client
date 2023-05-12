@@ -10,7 +10,7 @@ import { formatPrice } from '@/utils/common';
 import { removeItemFromCart } from '@/utils/shopingCart';
 import styles from '@/styles/cartPopup/index.module.scss';
 import spinnerStyles from '@/styles/spinner/index.module.scss';
-import { updateTotalPrice } from '@/utils/catalog';
+import { updateTotalPrice } from '@/context/shoping-cart';
 import CartItemCounter from '@/components/elements/CartItemCounter/CartItemCounter';
 
 const CartPopupItem = ({ item }: { item: IShoppingCartItem }) => {
