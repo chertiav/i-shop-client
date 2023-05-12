@@ -18,3 +18,19 @@ export interface IAddToCartFx {
 	userId: number;
 	partId: number;
 }
+
+export interface IUpdateCartItemFX {
+	url: string;
+	payload: {
+		total_price?: number;
+		count?: number;
+	};
+}
+
+export interface ICartItemCounterProps {
+	totalCount: number;
+	partId: number;
+	initialCount: number;
+	increasePrice: VoidFunction;
+	decreasePrice: VoidFunction;
+}

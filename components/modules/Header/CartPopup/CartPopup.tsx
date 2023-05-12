@@ -6,12 +6,18 @@ import Link from 'next/link';
 //===========================================================
 import { $user } from '@/context/users';
 import { $mode } from '@/context/mode';
-import { $shoppingCart, setShoppingCart } from '@/context/shoping-cart';
+import {
+	$shoppingCart,
+	$totalPrice,
+	setShoppingCart,
+	setTotalPrice,
+} from '@/context/shoping-cart';
 import { getCartItemsFx } from '@/app/api/shopping-cart';
 import ShoppingCartSvg from '@/components/elements/ShoppingCartSvg/ShoppingCartSvg';
 import CartPopupItem from '@/components/modules/Header/CartPopup/CartPopupItem';
-import { IWrappedComponentProps } from '@/types/common';
 import { withClickOutside } from '@/utils/withClickOutside';
+import { formatPrice } from '@/utils/common';
+import { IWrappedComponentProps } from '@/types/common';
 import styles from '@/styles/cartPopup/index.module.scss';
 
 const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
@@ -19,6 +25,7 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 		const shoppingCart = useStore($shoppingCart);
 		const mode = useStore($mode);
 		const user = useStore($user);
+		const totalPrice = useStore($totalPrice);
 		const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 		const toggleCartDropDawn = () => {
@@ -28,6 +35,14 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 		useEffect(() => {
 			loadCartItems();
 		}, []);
+
+		useEffect(() => {
+			setTotalPrice(
+				shoppingCart.reduce((defaultCount, item) => {
+					return defaultCount + item.total_price;
+				}, 0)
+			);
+		}, [shoppingCart]);
 
 		const loadCartItems = async () => {
 			try {
@@ -86,7 +101,9 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 									>
 										Общая сумма заказа:
 									</span>
-									<span className={styles.cart__popup__footer__price}>0</span>
+									<span className={styles.cart__popup__footer__price}>
+										$ {formatPrice(totalPrice)}
+									</span>
 								</div>
 								<Link href={'/order'} passHref legacyBehavior>
 									<button
