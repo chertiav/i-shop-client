@@ -14,6 +14,7 @@ export interface IShoppingCartItem {
 
 export interface IAddToCartFx {
 	url: string;
-	username: string;
+	userName: string;
+	userId: number;
 	partId: number;
 }

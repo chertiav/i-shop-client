@@ -1,30 +1,48 @@
 import { useStore } from 'effector-react';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import Link from 'next/link';
 //===========================================================
+import { $user } from '@/context/users';
+import { $mode } from '@/context/mode';
+import { $shoppingCart, setShoppingCart } from '@/context/shoping-cart';
+import { getCartItemsFx } from '@/app/api/shopping-cart';
 import ShoppingCartSvg from '@/components/elements/ShoppingCartSvg/ShoppingCartSvg';
+import CartPopupItem from '@/components/modules/Header/CartPopup/CartPopupItem';
 import { IWrappedComponentProps } from '@/types/common';
 import { withClickOutside } from '@/utils/withClickOutside';
-import { $mode } from '@/context/mode';
-import { $shoppingCart } from '@/context/shoping-cart';
 import styles from '@/styles/cartPopup/index.module.scss';
 
 const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 	({ open, setOpen }, ref) => {
 		const shoppingCart = useStore($shoppingCart);
 		const mode = useStore($mode);
+		const user = useStore($user);
 		const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
-		const toggleCartDropdawn = () => {
+		const toggleCartDropDawn = () => {
 			return setOpen(!open);
+		};
+
+		useEffect(() => {
+			loadCartItems();
+		}, []);
+
+		const loadCartItems = async () => {
+			try {
+				const cartItems = await getCartItemsFx(`/shopping-cart/${user.userId}`);
+				setShoppingCart(cartItems);
+			} catch (e) {
+				toast.error((e as Error).message);
+			}
 		};
 
 		return (
 			<div className={styles.cart} ref={ref}>
 				<button
 					className={`${styles.cart__btn} ${darkModeClass}`}
-					onClick={toggleCartDropdawn}
+					onClick={toggleCartDropDawn}
 				>
 					{!!shoppingCart.length && (
 						<span className={styles.cart__btn__count}>
@@ -49,16 +67,15 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 							<ul className={styles.cart__popup__list}>
 								{shoppingCart.length ? (
 									shoppingCart.map((item) => {
-										return (
-											<li
-												key={item.id}
-												className={`${styles.cart__popup__empty__text} ${darkModeClass}`}
-											/>
-										);
+										return <CartPopupItem item={item} key={item.id} />;
 									})
 								) : (
 									<li className={styles.cart__popup__empty}>
-										<span>Корзина пуста</span>
+										<span
+											className={`${styles.cart__popup__empty__text} ${darkModeClass}`}
+										>
+											Корзина пуста
+										</span>
 									</li>
 								)}
 							</ul>
