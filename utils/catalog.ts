@@ -1,7 +1,10 @@
 import { NextRouter } from 'next/router';
-import { getQueryParamOnFirstRender, idGenerator } from '@/utils/common';
+//=======================================================
 import { getBoilerPartsFx } from '@/app/api/boilerParts';
+import { updateCartItemFx } from '@/app/api/shopping-cart';
+import { updateCartItemTotalPrice } from '@/context/shoping-cart';
 import { setFilteredBoilerParts } from '@/context/boilerParts';
+import { getQueryParamOnFirstRender, idGenerator } from '@/utils/common';
 import { IFilterCheckboxItem } from '@/types/catalog';
 
 const createManufacturerCheckboxObj = (title: string) => {
@@ -118,4 +121,12 @@ export const getItemManufacturers = (
 		.map((item) => {
 			return item.title;
 		});
+};
+
+export const updateTotalPrice = async (total_price: number, partId: number) => {
+	const data = await updateCartItemFx({
+		url: `/shopping-cart/total-price/${partId}`,
+		payload: { total_price },
+	});
+	updateCartItemTotalPrice({ partId, total_price: data.total_price });
 };

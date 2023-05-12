@@ -14,6 +14,23 @@ export interface IShoppingCartItem {
 
 export interface IAddToCartFx {
 	url: string;
-	username: string;
+	userName: string;
+	userId: number;
 	partId: number;
+}
+
+export interface IUpdateCartItemFX {
+	url: string;
+	payload: {
+		total_price?: number;
+		count?: number;
+	};
+}
+
+export interface ICartItemCounterProps {
+	totalCount: number;
+	partId: number;
+	initialCount: number;
+	increasePrice: VoidFunction;
+	decreasePrice: VoidFunction;
 }
