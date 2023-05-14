@@ -11,7 +11,7 @@ import {
 } from '@/utils/shipping-payment';
 import styles from '@/styles/shippingPayment/index.module.scss';
 
-const ShippingPayment = () => {
+const ShippingPaymentPage = () => {
 	const [tab1, setTab1] = useState(true);
 	const [tab2, setTab2] = useState(false);
 	const [tab3, setTab3] = useState(false);
@@ -142,4 +142,4 @@ const ShippingPayment = () => {
 	);
 };
 
-export default ShippingPayment;
+export default ShippingPaymentPage;

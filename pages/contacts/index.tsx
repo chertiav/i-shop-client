@@ -1,13 +1,13 @@
 import Head from 'next/head';
 //============================================================
 import Layout from '@/components/layout/Layout';
-import ShippingPaymentPage from '@/components/templates/ShippingPaymentPage/ShippingPaymentPage';
+import ContactsPage from '@/components/templates/ContactsPage/ContactsPage';
 
-const ShippingPaymentPage = () => {
+const Contacts = () => {
 	return (
 		<>
 			<Head>
-				<title>Наименование магазина | Доставка и оплата</title>
+				<title>Наименование магазина | О компании</title>
 				<meta charSet="UTF-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE-edge" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,7 +15,7 @@ const ShippingPaymentPage = () => {
 			</Head>
 			<Layout>
 				<main>
-					<ShippingPaymentPage />
+					<ContactsPage />
 					<div className={'overlay'} />
 				</main>
 			</Layout>
@@ -23,4 +23,4 @@ const ShippingPaymentPage = () => {
 	);
 };
 
-export default ShippingPaymentPage;
+export default Contacts;
