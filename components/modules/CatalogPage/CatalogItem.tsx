@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { useStore } from 'effector-react';
 import Link from 'next/link';
 //==========================================
 import { $mode } from '@/context/mode';
 import { $user } from '@/context/users';
 import { $shoppingCart } from '@/context/shoping-cart';
+import { removeFromCartFx } from '@/app/api/shopping-cart';
 import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartHoverCheckedSvg';
 import CartHoverSvg from '@/components/elements/CartHoverSvg/CartHoverSvg';
 import { toggleCartItem } from '@/utils/shopingCart';
@@ -14,7 +14,7 @@ import spinnerStyles from '@/styles/spinner/index.module.scss';
 import styles from '@/styles/catalog/index.module.scss';
 
 const CatalogItem = ({ item }: { item: IBoilerPart }) => {
-	const [spinner, setSpinner] = useState(false);
+	const spinner = useStore(removeFromCartFx.pending);
 	const shoppingCart = useStore($shoppingCart);
 	const isInCart = shoppingCart.some((cartItem) => {
 		return cartItem.partId === item.id;
@@ -24,13 +24,7 @@ const CatalogItem = ({ item }: { item: IBoilerPart }) => {
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 	const toggleToCart = () => {
-		return toggleCartItem(
-			user.userName,
-			+user.userId,
-			item.id,
-			isInCart,
-			setSpinner
-		);
+		return toggleCartItem(user.userName, +user.userId, item.id, isInCart);
 	};
 
 	return (

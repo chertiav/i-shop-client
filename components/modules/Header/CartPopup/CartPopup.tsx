@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { $user } from '@/context/users';
 import { $mode } from '@/context/mode';
 import {
+	$disableCart,
 	$shoppingCart,
 	$totalPrice,
 	setShoppingCart,
@@ -25,6 +26,7 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 		const shoppingCart = useStore($shoppingCart);
 		const mode = useStore($mode);
 		const user = useStore($user);
+		const disableCart = useStore($disableCart);
 		const totalPrice = useStore($totalPrice);
 		const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
@@ -55,20 +57,32 @@ const CartPopup = forwardRef<HTMLDivElement, IWrappedComponentProps>(
 
 		return (
 			<div className={styles.cart} ref={ref}>
-				<button
-					className={`${styles.cart__btn} ${darkModeClass}`}
-					onClick={toggleCartDropDawn}
-				>
-					{!!shoppingCart.length && (
-						<span className={styles.cart__btn__count}>
-							{shoppingCart.length}
+				{disableCart ? (
+					<button
+						className={`${styles.cart__btn} ${darkModeClass}`}
+						style={{ cursor: 'auto' }}
+					>
+						<span className={styles.cart__svg}>
+							<ShoppingCartSvg />
 						</span>
-					)}
-					<span className={styles.cart__svg}>
-						<ShoppingCartSvg />
-					</span>
-					<span className={styles.cart__text}>Корзина</span>
-				</button>
+						<span className={styles.cart__text}>Корзина</span>
+					</button>
+				) : (
+					<button
+						className={`${styles.cart__btn} ${darkModeClass}`}
+						onClick={toggleCartDropDawn}
+					>
+						{!!shoppingCart.length && (
+							<span className={styles.cart__btn__count}>
+								{shoppingCart.length}
+							</span>
+						)}
+						<span className={styles.cart__svg}>
+							<ShoppingCartSvg />
+						</span>
+						<span className={styles.cart__text}>Корзина</span>
+					</button>
+				)}
 				<AnimatePresence>
 					{open && (
 						<motion.ul

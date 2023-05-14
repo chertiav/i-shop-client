@@ -1,16 +1,22 @@
 import { toast } from 'react-toastify';
-import { addToCartFx, removeFromCartFx } from '@/app/api/shopping-cart';
-import { removeShoppingCart, updateShoppingCart } from '@/context/shoping-cart';
+import {
+	addToCartFx,
+	removeFromCartFx,
+	updateCartItemFx,
+} from '@/app/api/shopping-cart';
+import {
+	removeShoppingCart,
+	updateCartItemTotalPrice,
+	updateShoppingCart,
+} from '@/context/shoping-cart';
 
 export const toggleCartItem = async (
 	userName: string,
 	userId: number,
 	partId: number,
-	isInCart: boolean,
-	setSpinner: (arg0: boolean) => void
+	isInCart: boolean
 ) => {
 	try {
-		setSpinner(true);
 		if (isInCart) {
 			await removeFromCartFx(`/shopping-cart/one/${partId}`);
 			removeShoppingCart(partId);
@@ -27,22 +33,22 @@ export const toggleCartItem = async (
 		updateShoppingCart(data);
 	} catch (e) {
 		toast.error((e as Error).message);
-	} finally {
-		setSpinner(false);
 	}
 };
 
-export const removeItemFromCart = async (
-	partId: number,
-	setSpinner: (arg0: boolean) => void
-) => {
+export const removeItemFromCart = async (partId: number) => {
 	try {
-		setSpinner(true);
 		await removeFromCartFx(`/shopping-cart/one/${partId}`);
 		removeShoppingCart(partId);
 	} catch (e) {
 		toast.error((e as Error).message);
-	} finally {
-		setSpinner(false);
 	}
+};
+
+export const updateTotalPrice = async (total_price: number, partId: number) => {
+	const data = await updateCartItemFx({
+		url: `/shopping-cart/total-price/${partId}`,
+		payload: { total_price },
+	});
+	updateCartItemTotalPrice({ partId, total_price: data.total_price });
 };

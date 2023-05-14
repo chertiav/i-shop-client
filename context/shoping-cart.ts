@@ -1,6 +1,5 @@
 import { createDomain } from 'effector-next';
 import { IShoppingCartItem } from '@/types/shoping-cart';
-import { updateCartItemFx } from '@/app/api/shopping-cart';
 
 const shoppingCart = createDomain();
 
@@ -8,6 +7,7 @@ export const setShoppingCart = shoppingCart.createEvent<IShoppingCartItem[]>();
 export const updateShoppingCart = shoppingCart.createEvent<IShoppingCartItem>();
 export const removeShoppingCart = shoppingCart.createEvent<number>();
 export const setTotalPrice = shoppingCart.createEvent<number>();
+export const setDisableCart = shoppingCart.createEvent<boolean>();
 export const updateCartItemTotalPrice = shoppingCart.createEvent<{
 	partId: number;
 	total_price: number;
@@ -63,10 +63,8 @@ export const $totalPrice = shoppingCart
 		return value;
 	});
 
-export const updateTotalPrice = async (total_price: number, partId: number) => {
-	const data = await updateCartItemFx({
-		url: `/shopping-cart/total-price/${partId}`,
-		payload: { total_price },
+export const $disableCart = shoppingCart
+	.createStore<boolean>(false)
+	.on(setDisableCart, (_, value) => {
+		return value;
 	});
-	updateCartItemTotalPrice({ partId, total_price: data.total_price });
-};

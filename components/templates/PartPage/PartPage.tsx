@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useStore } from 'effector-react';
 import { toast } from 'react-toastify';
 //================================================
@@ -12,6 +12,7 @@ import {
 import { $boilerPart } from '@/context/boilerPart';
 import { $shoppingCart } from '@/context/shoping-cart';
 import { getBoilerPartsFx } from '@/app/api/boilerParts';
+import { removeFromCartFx } from '@/app/api/shopping-cart';
 import PartAccordion from '@/components/modules/PartPage/PartAccordion';
 import PartImageList from '@/components/modules/PartPage/PartImageList';
 import CartHoverCheckedSvg from '@/components/elements/CartHoverCheckedSvg/CartHoverCheckedSvg';
@@ -35,17 +36,11 @@ const PartPage = () => {
 	const isinCart = cartItems.some((item) => {
 		return item.partId === boilerPart.id;
 	});
-	const [spinnerToggleCart, setSpinnerToggleCart] = useState(false);
-	const [spinnerSlider, setSpinnerSlider] = useState(false);
+	const spinnerToggleCart = useStore(removeFromCartFx.pending);
+	const spinnerSlider = useStore(getBoilerPartsFx.pending);
 
 	const toggleToCart = () => {
-		return toggleCartItem(
-			user.userName,
-			+user.userId,
-			boilerPart.id,
-			isinCart,
-			setSpinnerToggleCart
-		);
+		return toggleCartItem(user.userName, +user.userId, boilerPart.id, isinCart);
 	};
 
 	useEffect(() => {
@@ -54,16 +49,11 @@ const PartPage = () => {
 
 	const loadBoilerPart = async () => {
 		try {
-			setSpinnerSlider(true);
 			const data = await getBoilerPartsFx('/boiler-parts?limit=20&offset=0');
 			setBoilerParts(data);
 			setBoilerPartsPopularity();
 		} catch (e) {
 			toast.error((e as Error).message);
-		} finally {
-			setTimeout(() => {
-				return setSpinnerSlider(false);
-			}, 1000);
 		}
 	};
 

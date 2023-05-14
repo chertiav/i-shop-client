@@ -1,44 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useStore } from 'effector-react';
 import Link from 'next/link';
 //========================================================
 import { $mode } from '@/context/mode';
 import DeleteSvg from '@/components/elements/DeleteSvg/DeleteSvg';
-import { IShoppingCartItem } from '@/types/shoping-cart';
+import CartItemCounter from '@/components/elements/CartItemCounter/CartItemCounter';
+import { usePrice } from '@/hooks/usePrice';
 import { formatPrice } from '@/utils/common';
-import { removeItemFromCart } from '@/utils/shopingCart';
+import { IShoppingCartItem } from '@/types/shoping-cart';
 import styles from '@/styles/cartPopup/index.module.scss';
 import spinnerStyles from '@/styles/spinner/index.module.scss';
-import { updateTotalPrice } from '@/context/shoping-cart';
-import CartItemCounter from '@/components/elements/CartItemCounter/CartItemCounter';
 
 const CartPopupItem = ({ item }: { item: IShoppingCartItem }) => {
 	const mode = useStore($mode);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 	const spinnerDarkModeClass =
 		mode === 'dark' ? '' : `${spinnerStyles.dark_mode}`;
-	const [spinner, setSpinner] = useState(false);
-	const [price, setPrice] = useState(item.price);
-
-	useEffect(() => {
-		setPrice(price * item.count);
-	}, []);
-
-	useEffect(() => {
-		updateTotalPrice(price, item.partId);
-	}, [price]);
-
-	const increasePrice = () => {
-		return setPrice(price + item.price);
-	};
-	const decreasePrice = () => {
-		return setPrice(price - item.price);
-	};
-
-	const deleteCartItem = () => {
-		return removeItemFromCart(item.partId, setSpinner);
-	};
+	const { spinner, price, deleteCartItem, increasePrice, decreasePrice } =
+		usePrice(item.count, item.partId, item.price);
 
 	return (
 		<li className={styles.cart__popup__list__item}>

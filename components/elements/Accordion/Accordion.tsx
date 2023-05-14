@@ -26,7 +26,7 @@ const Accordion = ({
 				isMobileForFilters ? (
 					<button className={`${titleClass} ${hideArrowClass}`}>{title}</button>
 				) : (
-					<motion.header
+					<motion.button
 						initial={false}
 						onClick={toggleAccordion}
 						className={`${titleClass} ${
@@ -34,7 +34,7 @@ const Accordion = ({
 						}`}
 					>
 						{title}
-					</motion.header>
+					</motion.button>
 				)
 			) : (
 				''
