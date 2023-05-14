@@ -10,7 +10,7 @@ const Order = () => {
 		<>
 			<Head>
 				<title>
-					Наименование магазина | {shouldLoadContent ? 'Главная' : ''}
+					Наименование магазина | {shouldLoadContent ? 'Оплата заказа' : ''}
 				</title>
 				<meta charSet="UTF-8" />
 				<meta httpEquiv="X-UA-Compatible" content="IE-edge" />
