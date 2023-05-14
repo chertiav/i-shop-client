@@ -4,9 +4,11 @@ import { $mode } from '@/context/mode';
 import styles from '@/styles/dashboard/index.module.scss';
 import { formatPrice } from '@/utils/common';
 import Link from 'next/link';
+import { $totalPrice } from '@/context/shoping-cart';
 
 const CartAlert = ({ count, closeAlert }: ICartAlertProps) => {
 	const mode = useStore($mode);
+	const totalPrice = useStore($totalPrice);
 	const darkModeClass = mode === 'dark' ? `${styles.dark_mode}` : '';
 
 	const ShowCountMessage = (count: string) => {
@@ -25,7 +27,7 @@ const CartAlert = ({ count, closeAlert }: ICartAlertProps) => {
 				<span>
 					В корзине {count} {ShowCountMessage(`${count}`)}
 				</span>
-				<span>На сумму ${formatPrice(0)}</span>
+				<span>На сумму ${formatPrice(totalPrice)}</span>
 			</div>
 			<div className={styles.dashboard__alert__right}>
 				<Link href={'/order'} passHref legacyBehavior>

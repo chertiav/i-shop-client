@@ -27,6 +27,14 @@ const DashboardPage = () => {
 		loadBoilerParts();
 	}, []);
 
+	useEffect(() => {
+		if (shoppingCart.length) {
+			setShowAlert(true);
+			return;
+		}
+		setShowAlert(false);
+	}, [shoppingCart.length]);
+
 	const closeAlert = () => {
 		return setShowAlert(false);
 	};
@@ -72,7 +80,11 @@ const DashboardPage = () => {
 					<h3 className={`${styles.dashboard__parts__title} ${darkModeClass}`}>
 						Хиты продаж
 					</h3>
-					<DashboardSlider items={bestsellers.rows || []} spinner={spinner} />
+					<DashboardSlider
+						items={bestsellers.rows || []}
+						spinner={spinner}
+						goToPartPage
+					/>
 				</div>
 				<div className={styles.dashboard__parts}>
 					<h3 className={`${styles.dashboard__parts__title} ${darkModeClass}`}>
