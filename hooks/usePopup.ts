@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react';
+import { setSearchInputZIndex } from '@/context/header';
+import {
+	removeClassNamesForOverlayAndBody,
+	toggleClassNamesForOverlayAndBody,
+} from '@/utils/common';
 
 export const usePopup = () => {
 	const [open, setOpen] = useState(false);
 
 	const toggleOpen = () => {
 		window.scrollTo(0, 0);
-		document.querySelector('.overlay')?.classList.add('open');
-		document.querySelector('.body')?.classList.add('overflow-hidden');
+		toggleClassNamesForOverlayAndBody();
 		setOpen(!open);
 	};
 
 	const closePopup = () => {
-		document.querySelector('.overlay')?.classList.remove('open');
-		document.querySelector('.body')?.classList.remove('overflow-hidden');
+		removeClassNamesForOverlayAndBody();
 		setOpen(false);
+		setSearchInputZIndex(1);
 	};
 
 	useEffect(() => {

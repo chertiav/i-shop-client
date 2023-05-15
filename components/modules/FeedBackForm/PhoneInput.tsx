@@ -7,7 +7,7 @@ const PhoneInput = ({ register, errors, darkModeClass }: IFeedbackInput) => {
 			<span>Телефон *</span>
 			<input
 				className={styles.feedback_form__form__input}
-				placeholder="+7 999 999 99 99"
+				placeholder="000 000 00 00"
 				type="tel"
 				{...register('phone', {
 					required: 'Введите телефон!',
@@ -15,8 +15,8 @@ const PhoneInput = ({ register, errors, darkModeClass }: IFeedbackInput) => {
 						value: /^\d*[1-9]\d*$/,
 						message: 'Недопустимое значение',
 					},
-					minLength: 11,
-					maxLength: 11,
+					minLength: 12,
+					maxLength: 12,
 				})}
 			/>
 			{errors.phone && (
