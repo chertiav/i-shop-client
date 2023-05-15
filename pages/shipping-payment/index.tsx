@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Layout from '@/components/layout/Layout';
 import ShippingPaymentPage from '@/components/templates/ShippingPaymentPage/ShippingPaymentPage';
 
-const ShippingPaymentPage = () => {
+const ShippingPayment = () => {
 	return (
 		<>
 			<Head>
@@ -23,4 +23,4 @@ const ShippingPaymentPage = () => {
 	);
 };
 
-export default ShippingPaymentPage;
+export default ShippingPayment;
