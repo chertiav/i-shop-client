@@ -6,7 +6,7 @@ import { ParsedUrlQuery } from 'querystring';
 import Link from 'next/link';
 //========================================
 import { $mode } from '@/context/mode';
-import Crumb from '@/components/templates/BreadCrumbs/Crumb';
+import Crumb from '@/components/modules/BreadCrumbs/Crumb';
 import styles from '@/styles/breadcrumbs/index.module.scss';
 
 const generatePathParts = (pathStr: string) => {

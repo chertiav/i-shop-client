@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import Layout from '@/components/layout/Layout';
 import DashboardPage from '@/components/templates/DashboardPage/DashboardPage';
 import useRedirectByUserCheck from '@/hooks/useRedirectByUserCheck';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 
 const Dashboard = () => {
 	const { shouldLoadContent } = useRedirectByUserCheck();

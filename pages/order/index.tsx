@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Layout from '@/components/layout/Layout';
 import OrderPage from '@/components/templates/OrderPage/OrderPage';
 import useRedirectByUserCheck from '@/hooks/useRedirectByUserCheck';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 import { useCallback } from 'react';
 
 const Order = () => {

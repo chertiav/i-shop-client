@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 //============================================================
 import Layout from '@/components/layout/Layout';
 import ContactsPage from '@/components/templates/ContactsPage/ContactsPage';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 
 const Contacts = () => {
 	const getDefaultTextGenerator = useCallback(() => {

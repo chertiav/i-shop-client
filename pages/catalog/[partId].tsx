@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 //============================================================
 import { getBoilerPartFx } from '@/app/api/boilerParts';
 import { $boilerPart, setBoilerPart } from '@/context/boilerPart';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 import Layout from '@/components/layout/Layout';
 import PartPage from '@/components/templates/PartPage/PartPage';
 import Custom404 from '@/pages/404';

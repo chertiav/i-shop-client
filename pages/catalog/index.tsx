@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 //============================================================
 import CatalogPage from '@/components/templates/CatlogPage/CatalogPage';
 import Layout from '@/components/layout/Layout';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 import useRedirectByUserCheck from '@/hooks/useRedirectByUserCheck';
 import { IQueryParams } from '@/types/catalog';
 

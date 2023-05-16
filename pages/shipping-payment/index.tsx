@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Layout from '@/components/layout/Layout';
 import ShippingPaymentPage from '@/components/templates/ShippingPaymentPage/ShippingPaymentPage';
 import { useCallback } from 'react';
-import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
+import Breadcrumbs from '@/components/modules/BreadCrumbs/BreadCrumbs';
 
 const ShippingPayment = () => {
 	const getDefaultTextGenerator = useCallback(() => {
