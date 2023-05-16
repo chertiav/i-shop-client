@@ -1,9 +1,17 @@
 import Head from 'next/head';
+import { useCallback } from 'react';
 //============================================================
 import Layout from '@/components/layout/Layout';
 import ContactsPage from '@/components/templates/ContactsPage/ContactsPage';
+import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
 
 const Contacts = () => {
+	const getDefaultTextGenerator = useCallback(() => {
+		return 'Контакты';
+	}, []);
+	const getTextGenerator = useCallback((param: string) => {
+		return {}[param];
+	}, []);
 	return (
 		<>
 			<Head>
@@ -15,6 +23,10 @@ const Contacts = () => {
 			</Head>
 			<Layout>
 				<main>
+					<Breadcrumbs
+						getDefaultTextGenerator={getDefaultTextGenerator}
+						getTextGenerator={getTextGenerator}
+					/>
 					<ContactsPage />
 					<div className={'overlay'} />
 				</main>

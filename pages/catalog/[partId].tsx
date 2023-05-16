@@ -1,22 +1,40 @@
 import Head from 'next/head';
 import { useStore } from 'effector-react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 //============================================================
 import { getBoilerPartFx } from '@/app/api/boilerParts';
 import { $boilerPart, setBoilerPart } from '@/context/boilerPart';
+import Breadcrumbs from '@/components/templates/BreadCrumbs/BreadCrumbs';
 import Layout from '@/components/layout/Layout';
 import PartPage from '@/components/templates/PartPage/PartPage';
 import Custom404 from '@/pages/404';
 import useRedirectByUserCheck from '@/hooks/useRedirectByUserCheck';
 import { IQueryParams } from '@/types/catalog';
-import { toast } from 'react-toastify';
 
 const CatalogPartPage = ({ query }: { query: IQueryParams }) => {
 	const { shouldLoadContent } = useRedirectByUserCheck();
 	const boilerPart = useStore($boilerPart);
 	const [error, setError] = useState(false);
 	const router = useRouter();
+	const getDefaultTextGenerator = useCallback((sabPath: string) => {
+		return sabPath.replace('catalog', 'Каталог');
+	}, []);
+	const getTextGenerator = useCallback((param: string) => {
+		return {}[param];
+	}, []);
+	const lastCrumb = document.querySelector('.last-crumb') as HTMLFormElement;
+
+	useEffect(() => {
+		loadBoilerPart();
+	}, [router.push]);
+
+	useEffect(() => {
+		if (lastCrumb) {
+			lastCrumb.textContent = boilerPart.name;
+		}
+	}, [lastCrumb, boilerPart]);
 
 	const loadBoilerPart = async () => {
 		try {
@@ -35,10 +53,6 @@ const CatalogPartPage = ({ query }: { query: IQueryParams }) => {
 		}
 	};
 
-	useEffect(() => {
-		loadBoilerPart();
-	}, [router.push]);
-
 	return (
 		<>
 			<Head>
@@ -54,6 +68,10 @@ const CatalogPartPage = ({ query }: { query: IQueryParams }) => {
 				shouldLoadContent && (
 					<Layout>
 						<main>
+							<Breadcrumbs
+								getDefaultTextGenerator={getDefaultTextGenerator}
+								getTextGenerator={getTextGenerator}
+							/>
 							<PartPage />
 							<div className={'overlay'} />
 						</main>
