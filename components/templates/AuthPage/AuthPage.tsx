@@ -15,7 +15,7 @@ const AuthPage = () => {
 	const switchC2 = useRef() as MutableRefObject<HTMLDivElement>;
 	const switchCircle1 = useRef() as MutableRefObject<HTMLDivElement>;
 	const switchCircle2 = useRef() as MutableRefObject<HTMLDivElement>;
-	const switchBtn = useRef() as MutableRefObject<HTMLDivElement>;
+	// const switchBtn = useRef() as MutableRefObject<HTMLDivElement>;
 	const aContainer = useRef() as MutableRefObject<HTMLDivElement>;
 	const bContainer = useRef() as MutableRefObject<HTMLDivElement>;
 	const mode = useStore($mode);

@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { useCallback } from 'react';
 //============================================================
 import Layout from '@/components/layout/Layout';
 import DashboardPage from '@/components/templates/DashboardPage/DashboardPage';

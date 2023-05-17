@@ -97,7 +97,7 @@ const DashboardPage = () => {
 					</h3>
 					<DashboardSlider items={newParts.rows || []} spinner={spinner} />
 				</div>
-				<div className={styles.dashboard__about}></div>
+				<div className={styles.dashboard__about} />
 				<h3
 					className={`${styles.dashboard__parts__title} ${styles.dashboard__about__title} ${darkModeClass}`}
 				>
